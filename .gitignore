@@ -1,0 +1,6 @@
+# Created by .gitignore support plugin (hsz.mobi)
+*.log
+*.txt
+*.iml
+*.eml
+target
