@@ -5,6 +5,14 @@ package util;
  */
 public class YeatsUtil {
 
+    public static int ceil(int a,int b){
+        return a%b==0?a/b:a/b+1;
+    }
+
+    public static int ceil(String a,String b){
+        return ceil(Integer.parseInt(a),Integer.parseInt(b));
+    }
+
     public static String unicode2Character(String str)
     {
         str = (str == null ? "" : str);
