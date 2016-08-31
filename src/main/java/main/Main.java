@@ -34,7 +34,7 @@ public class Main {
         loginInfo.login();
        /* System.out.println("请输入userid");
         String userId=sc.nextLine();*/
-        String userId="1629467041";
+        String userId="3841898716";
         User user=null;
         String url=Config.getValue("userInfoUrl").replaceAll("#userId#",userId).replaceAll("#unixTime#",System.currentTimeMillis()+"");
         Connection con= JsoupUtil.getGetCon(url);
@@ -49,18 +49,19 @@ public class Main {
             e.printStackTrace();
             return;
         }
-        /*Jedis jedis= JedisUtil.getJedis();
-        jedis.set(Config.getValue("jedisUserId"),userId);*/
+        Jedis jedis=JedisUtil.getJedis();
+        jedis.del(Config.getValue("jedisPeopleList"));
+        JedisUtil.returnResource(jedis);
         int fansPageCount=YeatsUtil.ceil(user.getFansCount(),Config.getValue("fansPageSize"));
         int followeeCount=YeatsUtil.ceil(user.getFolloweeCount(),Config.getValue("followeePageSize"));
-        if(fansPageCount>20)
-            fansPageCount=22;
-       /* for(int i=1;i<=fansPageCount;i++){
+
+        if(fansPageCount>32)
+            fansPageCount=32;
+        for(int i=1;i<=fansPageCount;i++){
             threadPool.execute(new FansTask(userId,i+"",loginInfo.getLoginCookies()));
-        }*/
-        for(int i=1;i<followeeCount;i++){
+        }
+        for(int i=1;i<=followeeCount;i++){
             threadPool.execute(new FolloweeTask(userId,i+"",loginInfo.getLoginCookies()));
         }
-
     }
 }

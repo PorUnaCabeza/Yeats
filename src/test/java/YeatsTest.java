@@ -14,6 +14,7 @@ import util.YeatsUtil;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by Cabeza on 2016-06-03.
@@ -132,4 +133,49 @@ public class YeatsTest {
         }
     }
 
+    @Test
+    public void testWanmeiChongwu(){
+        Random random=new Random();
+        String url="http://event.wanmei.com/m/w2i/pethatch/act?action=hand&r=0."+random.nextInt(10000)+""+System.currentTimeMillis();
+        Connection con=JsoupUtil.getGetCon(url).ignoreContentType(true).userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13E238 MicroMessenger/6.3.15 NetType/WIFI Language/zh_CN");
+        Response rs=null;
+        try {
+            rs=con.cookie("Hm_lvt_69fae2e80f54618b006b557e1d2b3159","1465448299,1465457151")
+                    .cookie("JSESSIONID","841143A87F7AA222DB9031E7A2E0E520-m1")
+                    .cookie("__mtxcar","(direct):(none)")
+                    .cookie("__mtxsd","f4bc3916.1465458376965.3856.5")
+                    .cookie("__mtxsr","csr:(direct)|cdt:(direct)|advt:(none)|camp:(none)")
+                    .cookie("__mtxud","b89efd5152c8d5fe.1465457150784.1465457150784.1465458145451.2").execute();
+            System.out.println(rs.body());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void lingyang(){
+        String url="http://event.wanmei.com/m/w2i/pethatch/train";
+        Connection con=JsoupUtil.getGetCon(url)
+                .ignoreContentType(true)
+                .userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13E238 MicroMessenger/6.3.15 NetType/WIFI Language/zh_CN")
+                .referrer("http://event.wanmei.com/m/w2i/pethatch/get");
+        Response rs=null;
+        try {
+            rs=con.cookie("Hm_lvt_69fae2e80f54618b006b557e1d2b3159","1465448299,1465457151")
+                    .cookie("JSESSIONID","841143A87F7AA222DB9031E7A2E0E520-m1")
+                    .cookie("__mtxcar","(direct):(none)")
+                    .cookie("__mtxsd","f4bc3916.1465458376965.3856.5")
+                    .cookie("__mtxsr","csr:(direct)|cdt:(direct)|advt:(none)|camp:(none)")
+                    .cookie("__mtxud","b89efd5152c8d5fe.1465457150784.1465457150784.1465458145451.2").execute();
+            System.out.println(rs.body());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void testUnixTime(){
+        Random random=new Random();
+
+        System.out.println(random.nextInt(10000)+""+System.currentTimeMillis());
+    }
 }
