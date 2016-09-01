@@ -1,0 +1,21 @@
+--[getAccountList]
+select user_name
+      ,password
+      ,cookie_str
+      ,state
+      ,create_time
+      ,update_time
+  from account
+
+--[updateAccount]
+update account
+    set update_time = now()
+       --isNotEmpty password
+       ,password    = #password#
+       --end
+       --isNotEmpty cookieStr
+       ,cookie_str  = #cookieStr#
+       --end
+       --isNotEmpty state
+       ,state  = #state#
+       --end
