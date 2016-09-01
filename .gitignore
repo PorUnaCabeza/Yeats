@@ -4,3 +4,4 @@
 *.iml
 *.eml
 target
+src/main/resources/eql/eql-DEFAULT.properties
