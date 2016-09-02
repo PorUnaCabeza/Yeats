@@ -1,7 +1,6 @@
 import dao.AccountDao;
 import entity.Account;
 import org.junit.Test;
-import util.AccountPool;
 
 import java.util.HashMap;
 import java.util.Map;
