@@ -125,5 +125,10 @@
             <artifactId>webmagic-extension</artifactId>
             <version>0.5.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.bingoohuang</groupId>
+            <artifactId>java-utils</artifactId>
+            <version>0.0.9</version>
+        </dependency>
     </dependencies>
 </project>

@@ -19,3 +19,4 @@ update account
        --isNotEmpty state
        ,state  = #state#
        --end
+    where user_name = #userName#
