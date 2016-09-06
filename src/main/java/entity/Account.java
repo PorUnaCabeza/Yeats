@@ -40,6 +40,7 @@ public class Account {
 
     public void setCookieStr(String cookieStr) {
         this.cookieStr = cookieStr;
+        if (cookieStr == null) return;
         cookies.clear();
         List<String> list = Arrays.asList(cookieStr.split(";"));
         for (String str : list) {

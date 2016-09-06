@@ -29,16 +29,30 @@ public class AccountPool {
     private static Scanner sc = new Scanner(System.in);
 
     static {
-        accountList = AccountDao.getAccountList();
         log.info("检测登录...");
-        for (Account account : accountList) {
-            login(account);
-        }
+        accountList = AccountDao.getAccountList();
+        accountList.stream().filter(a -> !a.getState().equals("-1")).forEach(a -> login(a));
         System.out.println(accountList);
     }
 
     public AccountPool() {
 
+    }
+
+    private static void login(Account account) {
+        int count = 0;
+        while (!loginBySavedCookies(account) && !account.isLogin() && count < 3) {
+            count++;
+        }
+        count = 0;
+        while (!account.isLogin() && !loginByPassword(account) && count < 3) {
+            count++;
+        }
+        if (!account.isLogin()) {
+            log.info(account.getUserName() + "账号存在问题，请手动检测");
+            account.setState("-1");
+            AccountDao.updateAccount(account);
+        }
     }
 
 
@@ -94,6 +108,7 @@ public class AccountPool {
                 log.info(account.getUserName() + "帐号密码登录成功");
                 account.setLogin(true);
                 account.setCookies(rs.cookies());
+                account.setState("1");
                 AccountDao.updateAccount(account);
             } else {
                 log.info(account.getUserName() + "账号密码登录失败");
@@ -102,21 +117,6 @@ public class AccountPool {
             e.printStackTrace();
         }
         return account.isLogin();
-    }
-
-    private static void login(Account account) {
-        int count = 0;
-        while (!loginBySavedCookies(account) && !account.isLogin() && count < 3) {
-            count++;
-        }
-        count = 0;
-        while (!account.isLogin() && !loginByPassword(account) && count < 3) {
-            count++;
-        }
-        if (!account.isLogin()) {
-            account.setState("-1");
-            AccountDao.updateAccount(account);
-        }
     }
 
     private static boolean checkCaptcha(Account account) {
