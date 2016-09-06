@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Cabeza on 2016/9/1.
@@ -28,15 +29,23 @@ public class AccountPool {
 
     private static Scanner sc = new Scanner(System.in);
 
+    private static AtomicInteger index = new AtomicInteger(0);
+
     static {
         log.info("检测登录...");
         accountList = AccountDao.getAccountList();
         accountList.stream().filter(a -> !a.getState().equals("-1")).forEach(a -> login(a));
-        System.out.println(accountList);
+        log.info("成功登录" + accountList.size() + "个账号");
     }
 
     public AccountPool() {
 
+    }
+
+    public static Account getAccount() {
+        Account account = accountList.get(index.getAndIncrement());
+        index.compareAndSet(accountList.size(), 0);
+        return account;
     }
 
     private static void login(Account account) {

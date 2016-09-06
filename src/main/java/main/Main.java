@@ -12,10 +12,8 @@ import redis.clients.jedis.Jedis;
 import thread.FansTask;
 import thread.FolloweeTask;
 import thread.ThreadPool;
-import util.Config;
-import util.JedisUtil;
-import util.JsoupUtil;
-import util.YeatsUtil;
+import us.codecraft.webmagic.thread.CountableThreadPool;
+import util.*;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -25,23 +23,21 @@ import java.util.Scanner;
  */
 public class Main {
 
-    private static Logger log= LoggerFactory.getLogger(Main.class);
+    private static Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        ThreadPool threadPool = ThreadPool.getThreadPool(30);
-        Scanner sc=new Scanner(System.in);
-        LoginInfo loginInfo=new LoginInfo();
-        loginInfo.login();
-       /* System.out.println("请输入userid");
-        String userId=sc.nextLine();*/
-        String userId="3841898716";
-        User user=null;
-        String url=Config.getValue("userInfoUrl").replaceAll("#userId#",userId).replaceAll("#unixTime#",System.currentTimeMillis()+"");
-        Connection con= JsoupUtil.getGetCon(url);
-        Response rs=null;
+        //ThreadPool threadPool = ThreadPool.getThreadPool(30);
+        CountableThreadPool threadPool = new CountableThreadPool(5);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("请输入userid");
+        String userId = sc.nextLine();
+        User user = null;
+        String url = Config.getValue("userInfoUrl").replaceAll("#userId#", userId).replaceAll("#unixTime#", System.currentTimeMillis() + "");
+        Connection con = JsoupUtil.getGetCon(url);
+        Response rs = null;
         try {
-            rs=con.cookies(loginInfo.getLoginCookies()).execute();
-            user=new User(rs.body());
+            rs = con.cookies(AccountPool.getAccount().getCookies()).execute();
+            user = new User(rs.body());
             System.out.println(user);
 
         } catch (IOException e) {
@@ -49,19 +45,19 @@ public class Main {
             e.printStackTrace();
             return;
         }
-        Jedis jedis=JedisUtil.getJedis();
+        Jedis jedis = JedisUtil.getJedis();
         jedis.del(Config.getValue("jedisPeopleList"));
         JedisUtil.returnResource(jedis);
-        int fansPageCount=YeatsUtil.ceil(user.getFansCount(),Config.getValue("fansPageSize"));
-        int followeeCount=YeatsUtil.ceil(user.getFolloweeCount(),Config.getValue("followeePageSize"));
+        int fansPageCount = YeatsUtil.ceil(user.getFansCount(), Config.getValue("fansPageSize"));
+        int followeeCount = YeatsUtil.ceil(user.getFolloweeCount(), Config.getValue("followeePageSize"));
 
-        if(fansPageCount>32)
-            fansPageCount=32;
-        for(int i=1;i<=fansPageCount;i++){
-            threadPool.execute(new FansTask(userId,i+"",loginInfo.getLoginCookies()));
+        if (fansPageCount > 32)
+            fansPageCount = 32;
+        for (int i = 1; i <= fansPageCount; i++) {
+            threadPool.execute(new FansTask(userId, i + "", AccountPool.getAccount().getCookies()));
         }
-        for(int i=1;i<=followeeCount;i++){
-            threadPool.execute(new FolloweeTask(userId,i+"",loginInfo.getLoginCookies()));
+        for (int i = 1; i <= followeeCount; i++) {
+            threadPool.execute(new FolloweeTask(userId, i + "", AccountPool.getAccount().getCookies()));
         }
     }
 }
