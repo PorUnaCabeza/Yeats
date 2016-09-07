@@ -56,11 +56,11 @@ public class FansTask implements Runnable {
                 }
                 JSONObject userInfo = card.getJSONObject("user");
                 User user = new User();
-                user.setId(userInfo.getInt("id") + "");
+                user.setId(userInfo.get("id").toString());
                 user.setName(userInfo.getString("screen_name"));
                 user.setDesc(userInfo.getString("description"));
-                user.setWeiboCount(userInfo.getInt("statuses_count") + "");
-                user.setFansCount(userInfo.getInt("fansNum") + "");
+                user.setWeiboCount(userInfo.get("statuses_count").toString());
+                user.setFansCount(userInfo.get("fansNum").toString());
                 System.out.println(user);
                 jedis.rpush(Config.getValue("jedisPeopleList"), user.getId() + "|" + user.getWeiboCount());
             }
