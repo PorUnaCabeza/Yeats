@@ -32,7 +32,7 @@ public class Main {
         System.out.println("请输入userid");
         String userId = sc.nextLine();
         User user = null;
-        String url = Config.getValue("userInfoUrl").replaceAll("#userId#", userId).replaceAll("#unixTime#", System.currentTimeMillis() + "");
+        String url = Config.getValue("userHomeHtml").replaceAll("#userId#", userId);
         Connection con = JsoupUtil.getGetCon(url);
         Response rs = null;
         try {

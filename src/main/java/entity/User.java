@@ -7,6 +7,7 @@ import org.json.JSONObject;
  * Created by Cabeza on 2016-06-03.
  */
 public class User {
+    private String id;
     private String name;
     private String desc;
     private String weiboCount;
@@ -22,11 +23,20 @@ public class User {
         JSONObject jsonObject = new JSONObject(jsonStr);
         JSONArray page = jsonObject.getJSONObject("stage").getJSONArray("page");
         JSONObject data = page.getJSONObject(1);
+        setId(data.getString("id"));
         setName(data.getString("name"));
         setDesc(data.getString("description"));
         setFansCount(data.getString("fansNum"));
         setFolloweeCount(data.getString("attNum"));
         setWeiboCount(data.getString("mblogNum"));
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -72,7 +82,8 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "name='" + name + '\'' +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", desc='" + desc + '\'' +
                 ", weiboCount='" + weiboCount + '\'' +
                 ", fansCount='" + fansCount + '\'' +
