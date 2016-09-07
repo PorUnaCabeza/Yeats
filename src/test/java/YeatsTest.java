@@ -193,4 +193,22 @@ public class YeatsTest {
         User user = new User(rs.body());
         System.out.println(user);
     }
+
+
+    @Test
+    public void weiboTaskTest() {
+        String userId = "1292253127";
+        Connection con = JsoupUtil.getGetCon(Config.getValue("weiboListUrl").replaceAll("#userId#", userId).replaceAll("#page#", "1"));
+        Response rs = null;
+        try {
+            rs = con.ignoreContentType(true).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONArray cards = new JSONObject(rs.body()).getJSONArray("cards");
+        JSONArray list = cards.getJSONObject(0).getJSONArray("card_group");
+        for (int i = 0; i < list.length(); i++) {
+            System.out.println(list.getJSONObject(i).getJSONObject("mblog").getString("text"));
+        }
+    }
 }
