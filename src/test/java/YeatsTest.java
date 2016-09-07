@@ -1,4 +1,5 @@
 import entity.LoginInfo;
+import entity.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -189,6 +190,7 @@ public class YeatsTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(new JSONObject(rs.body().replaceAll(".*?window\\.\\$render_data\\s*=\\s*(.*?[\\s\\S]*\\});.*", "$1")).getJSONObject("stage"));
+        User user = new User(rs.body());
+        System.out.println(user);
     }
 }

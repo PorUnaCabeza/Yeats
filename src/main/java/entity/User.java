@@ -7,29 +7,42 @@ import org.json.JSONObject;
  * Created by Cabeza on 2016-06-03.
  */
 public class User {
+    private String name;
+    private String desc;
     private String weiboCount;
     private String fansCount;
     private String followeeCount;
 
-    public User(){
+    public User() {
 
     }
 
-    public User(String str){
-        String jsonStr=str.substring(str.indexOf("(")+1,str.lastIndexOf(")"));
-        JSONObject jsonObject=new JSONObject(jsonStr);
-        JSONArray apps=jsonObject.getJSONArray("apps");
-        for(int i=0;i<apps.length();i++){
-            if(apps.getJSONObject(i).getString("title").equals("粉丝")){
-                setFansCount(apps.getJSONObject(i).getString("count"));
-            }
-            if(apps.getJSONObject(i).getString("title").equals("关注")){
-                setFolloweeCount(apps.getJSONObject(i).getString("count"));
-            }
-            if(apps.getJSONObject(i).getString("title").equals("微博")){
-                setWeiboCount(apps.getJSONObject(i).getString("count"));
-            }
-        }
+    public User(String str) {
+        String jsonStr = str.replaceAll(".*?window\\.\\$render_data\\s*=\\s*(.*?[\\s\\S]*\\});.*", "$1");
+        JSONObject jsonObject = new JSONObject(jsonStr);
+        JSONArray page = jsonObject.getJSONObject("stage").getJSONArray("page");
+        JSONObject data = page.getJSONObject(1);
+        setName(data.getString("name"));
+        setDesc(data.getString("description"));
+        setFansCount(data.getString("fansNum"));
+        setFolloweeCount(data.getString("attNum"));
+        setWeiboCount(data.getString("mblogNum"));
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public String getWeiboCount() {
@@ -59,7 +72,9 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "weiboCount='" + weiboCount + '\'' +
+                "name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                ", weiboCount='" + weiboCount + '\'' +
                 ", fansCount='" + fansCount + '\'' +
                 ", followeeCount='" + followeeCount + '\'' +
                 '}';
