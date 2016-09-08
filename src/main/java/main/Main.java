@@ -12,6 +12,7 @@ import redis.clients.jedis.Jedis;
 import thread.FansTask;
 import thread.FolloweeTask;
 import thread.ThreadPool;
+import thread.WeiboTask;
 import us.codecraft.webmagic.thread.CountableThreadPool;
 import util.*;
 
@@ -47,17 +48,22 @@ public class Main {
         }
         Jedis jedis = JedisUtil.getJedis();
         jedis.del(Config.getValue("jedisPeopleList"));
+        jedis.del(Config.getValue("jedisWeiboList"));
         JedisUtil.returnResource(jedis);
         int fansPageCount = YeatsUtil.ceil(user.getFansCount(), Config.getValue("fansPageSize"));
         int followeeCount = YeatsUtil.ceil(user.getFolloweeCount(), Config.getValue("followeePageSize"));
+        int weiboPageSize = YeatsUtil.ceil(user.getWeiboCount(), Config.getValue("weiboPageSize"));
 
-        if (fansPageCount > 32)
+       /* if (fansPageCount > 32)
             fansPageCount = 32;
         for (int i = 1; i <= fansPageCount; i++) {
             threadPool.execute(new FansTask(userId, i + "", AccountPool.getAccount().getCookies()));
         }
         for (int i = 1; i <= followeeCount; i++) {
             threadPool.execute(new FolloweeTask(userId, i + "", AccountPool.getAccount().getCookies()));
+        }*/
+        for (int i = 0; i <= weiboPageSize; i++) {
+            threadPool.execute(new WeiboTask(user, i));
         }
     }
 }
