@@ -56,7 +56,7 @@ public class WeiboTask implements Runnable {
                 JSONObject mblog = list.getJSONObject(i).getJSONObject("mblog");
                 System.out.println(mblog.getString("mid") + "评论" + mblog.get("comments_count").toString() + mblog.getString("text"));
                 if (mblog.getInt("comments_count") > 0)
-                    jedis.rpush(Config.getValue("jedisWeiboList"), mblog.getString("mid") + "|" + mblog.get("comments_count").toString());
+                    jedis.rpush(Config.getValue("jedisWeiboList"), mblog.getString("mid") + "," + mblog.get("comments_count").toString());
                 //do something
             }
             return true;

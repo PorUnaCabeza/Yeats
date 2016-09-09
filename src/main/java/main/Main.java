@@ -9,14 +9,11 @@ import org.jsoup.Connection.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
-import thread.FansTask;
-import thread.FolloweeTask;
-import thread.ThreadPool;
-import thread.WeiboTask;
-import us.codecraft.webmagic.thread.CountableThreadPool;
+import thread.*;
 import util.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -27,11 +24,13 @@ public class Main {
     private static Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        //ThreadPool threadPool = ThreadPool.getThreadPool(30);
+        //ThreadPool threadPool = ThreadPool.getThreadPool(3);
         CountableThreadPool threadPool = new CountableThreadPool(5);
         Scanner sc = new Scanner(System.in);
         System.out.println("请输入userid");
         String userId = sc.nextLine();
+        System.out.print("请输入对比id");
+        String compareId = sc.nextLine();
         User user = null;
         String url = Config.getValue("userHomeHtml").replaceAll("#userId#", userId);
         Connection con = JsoupUtil.getGetCon(url);
@@ -62,8 +61,33 @@ public class Main {
         for (int i = 1; i <= followeeCount; i++) {
             threadPool.execute(new FolloweeTask(userId, i + "", AccountPool.getAccount().getCookies()));
         }*/
-        for (int i = 0; i <= weiboPageSize; i++) {
+        for (int i = 1; i <= weiboPageSize; i++) {
             threadPool.execute(new WeiboTask(user, i));
         }
+       /* Map cookies=AccountPool.getAccount().getCookies();
+        for(int i=1;i<=36;i++){
+            threadPool.execute(new CommentTask("3990971530582668",i+"",cookies));
+        }*/
+
+        new Thread(() -> {
+            while (true) {
+                Jedis commentJedis = JedisUtil.getJedis();
+                try {
+                    Thread.sleep(5000);
+                    long size = commentJedis.llen(Config.getValue("jedisWeiboList"));
+                    if (size == 0) continue;
+                    for (int i = 0; i < size; i++) {
+                        String[] commentArr = commentJedis.lpop(Config.getValue("jedisWeiboList")).split(",");
+                        for (int j = 1; j < YeatsUtil.ceil(commentArr[1], Config.getValue("commentPageSize")); j++) {
+                            threadPool.execute(new CommentTask(commentArr[0], j + "", AccountPool.getAccount().getCookies(), compareId));
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    JedisUtil.returnResource(commentJedis);
+                }
+            }
+        }).run();
     }
 }

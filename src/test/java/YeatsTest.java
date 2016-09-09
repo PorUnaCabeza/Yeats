@@ -7,15 +7,16 @@ import org.jsoup.Connection.Response;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.Base64;
-import util.Config;
-import util.JsoupUtil;
-import util.YeatsUtil;
+import thread.ThreadPool;
+import thread.WeiboTask;
+import us.codecraft.webmagic.thread.CountableThreadPool;
+import util.*;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Cabeza on 2016-06-03.
@@ -197,18 +198,74 @@ public class YeatsTest {
 
     @Test
     public void weiboTaskTest() {
+        long start = System.currentTimeMillis();
         String userId = "1292253127";
-        Connection con = JsoupUtil.getGetCon(Config.getValue("weiboListUrl").replaceAll("#userId#", userId).replaceAll("#page#", "1"));
-        Response rs = null;
+        Connection userCon = JsoupUtil.getGetCon(Config.getValue("userHomeHtml").replaceAll("#userId#", userId));
+        Response userRs = null;
         try {
-            rs = con.ignoreContentType(true).execute();
+            userRs = userCon.execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        JSONArray cards = new JSONObject(rs.body()).getJSONArray("cards");
-        JSONArray list = cards.getJSONObject(0).getJSONArray("card_group");
-        for (int i = 0; i < list.length(); i++) {
-            System.out.println(list.getJSONObject(i).getJSONObject("mblog").getString("text"));
+        User user = new User(userRs.body());
+        System.out.println(user);
+        int size = YeatsUtil.ceil(user.getWeiboCount(), Config.getValue("weiboPageSize"));
+        AtomicInteger success = new AtomicInteger(0);
+        AtomicInteger error = new AtomicInteger(0);
+        for (int a = 0; a <= size; a++) {
+            Connection con = JsoupUtil.getGetCon(Config.getValue("weiboListUrl").replaceAll("#userId#", userId).replaceAll("#page#", a + ""));
+            Response rs = null;
+            try {
+                rs = con.cookies(AccountPool.getAccount().getCookies()).ignoreContentType(true).execute();
+                JSONArray cards = new JSONObject(rs.body()).getJSONArray("cards");
+                JSONArray list = cards.getJSONObject(0).getJSONArray("card_group");
+                for (int i = 0; i < list.length(); i++) {
+                    System.out.println(list.getJSONObject(i).getJSONObject("mblog").getString("text"));
+                    success.incrementAndGet();
+                }
+            } catch (Exception e) {
+                error.incrementAndGet();
+                System.out.println(rs.body());
+                e.printStackTrace();
+            } finally {
+                System.out.println("cabeza成功" + success.intValue() + "失败" + error.get());
+            }
         }
+    }
+
+    @Test
+    public void testBoolean() {
+        int i = 0;
+        boolean a = false;
+        while (i < 3) {
+            System.out.println(i);
+            if (a = true) break;
+            i++;
+        }
+        System.out.println(a);
+    }
+
+    @Test
+    public void testWeiboTask() {
+        CountableThreadPool threadPool = new CountableThreadPool(5);
+        String userId = "1629467041";
+        Connection userCon = JsoupUtil.getGetCon(Config.getValue("userHomeHtml").replaceAll("#userId#", userId));
+        Response userRs = null;
+        try {
+            userRs = userCon.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        User user = new User(userRs.body());
+        System.out.println(user);
+        int size = YeatsUtil.ceil(user.getWeiboCount(), Config.getValue("weiboPageSize"));
+        System.out.println(size);
+        for (int i = 0; i <= size; i++) {
+            threadPool.execute(new WeiboTask(user, i));
+        }
+    }
+
+    public static void main(String[] args) {
+        new YeatsTest().testWeiboTask();
     }
 }

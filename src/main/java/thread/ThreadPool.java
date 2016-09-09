@@ -141,9 +141,9 @@ public final class ThreadPool {
                 if (r != null) {  
                     r.run();// 执行任务  
                 }  
-                finished_task++;  
-                r = null;  
-            }  
+                finished_task++;
+                r = null;
+            }
         }  
   
         // 停止工作，让该线程自然执行完run方法，自然结束  
