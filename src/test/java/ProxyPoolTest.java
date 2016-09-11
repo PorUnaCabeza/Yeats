@@ -2,6 +2,7 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import proxy.ProxyPool;
 import util.JsoupUtil;
@@ -26,7 +27,7 @@ public class ProxyPoolTest {
         elmts.stream()
                 .filter(e -> Pattern.matches("\\d+\\.\\d+\\.\\d+\\.\\d+", e.select("td").eq(1).text()))
                 .forEach(e -> ProxyPool.addProxy(new String[]{e.select("td").eq(1).text(), e.select("td").eq(2).text()}));
-        ProxyPool.checkProxy();
+        System.out.println("cabeza size " + ProxyPool.getIdleNum());
 
         /*Connection proxyCon=JsoupUtil.getGetCon("http://httpbin.org/ip").proxy("39.1.46.69",8080).ignoreContentType(true);
         Connection.Response proxyRs= null;

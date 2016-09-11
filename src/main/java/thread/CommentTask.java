@@ -1,11 +1,13 @@
 package thread;
 
 import entity.Comment;
+import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import proxy.ProxyPool;
 import util.AccountPool;
 import util.Config;
 import util.JsoupUtil;
@@ -57,7 +59,11 @@ public class CommentTask implements Runnable {
                 .header("Upgrade-Insecure-Requests", "1");
         Connection.Response rs = null;
         try {
-            rs = con.execute();
+            HttpHost httpHost = ProxyPool.getProxy();
+            rs = con
+                    .proxy(httpHost.getHostName(), httpHost.getPort())
+                    .execute();
+            ProxyPool.returnProxy(httpHost, rs.statusCode());
             JSONArray resultList = new JSONArray(rs.body());
             for (int i = 0; i < resultList.length(); i++) {
                 JSONObject mod = resultList.getJSONObject(i);
@@ -71,14 +77,14 @@ public class CommentTask implements Runnable {
                         comment.setCreateTime(commentJson.getString("created_at"));
                         comment.setUserName(commentJson.getJSONObject("user").getString("screen_name"));
                         comment.setUserId(commentJson.getJSONObject("user").get("id").toString());
-                        //  System.out.println(comment);
+                        System.out.println(comment);
                         if (compareUserId != null && compareUserId.equals(comment.getUserId()))
                             log.info(comment.toString());
                     }
                 }
             }
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

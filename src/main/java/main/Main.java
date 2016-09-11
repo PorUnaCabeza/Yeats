@@ -8,6 +8,7 @@ import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import proxy.ProxyPool;
 import redis.clients.jedis.Jedis;
 import thread.*;
 import util.*;
@@ -44,6 +45,13 @@ public class Main {
             log.info("获得用户信息失败");
             e.printStackTrace();
             return;
+        }
+        ProxyPool.initAndCheckProxy();
+        System.out.println("等待代理初始化");
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         Jedis jedis = JedisUtil.getJedis();
         jedis.del(Config.getValue("jedisPeopleList"));

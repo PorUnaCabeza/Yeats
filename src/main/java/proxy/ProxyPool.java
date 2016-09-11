@@ -3,6 +3,9 @@ package proxy;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
 import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thread.CountableThreadPool;
@@ -17,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
+import java.util.regex.Pattern;
 
 public class ProxyPool {
 
@@ -35,7 +39,6 @@ public class ProxyPool {
     private String proxyFilePath = "/data/webmagic/lastUse.proxy";
 
     private FilePersistentBase fBase = new FilePersistentBase();
-
     private Timer timer = new Timer(true);
     private TimerTask saveProxyTask = new TimerTask() {
 
@@ -167,11 +170,25 @@ public class ProxyPool {
                 logger.error("HttpHost init error:", e);
             }
         }
-        logger.info("proxy pool size>>>>" + allProxy.size());
     }
 
-    public static void checkProxy() {
-        CountableThreadPool threadPool = new CountableThreadPool(7);
+    public static void initAndCheckProxy() {
+        for (int i = 1; i <= 1; i++) {
+            Connection con = JsoupUtil.getGetCon("http://www.xicidaili.com/nn/" + i);
+            Connection.Response rs = null;
+            try {
+                rs = con.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Document doc = Jsoup.parse(rs.body());
+            Elements elmts = doc.select("tr");
+            elmts.stream()
+                    .filter(e -> Pattern.matches("\\d+\\.\\d+\\.\\d+\\.\\d+", e.select("td").eq(1).text()))
+                    .forEach(e -> addProxy(new String[]{e.select("td").eq(1).text(), e.select("td").eq(2).text()}));
+        }
+        System.out.println("proxy pool size>>>>" + allProxy.size());
+        CountableThreadPool threadPool = new CountableThreadPool(5);
         for (Proxy p : proxyQueue) {
             threadPool.execute(() -> {
                 int i = 0;
@@ -181,7 +198,7 @@ public class ProxyPool {
                         .getGetCon("http://httpbin.org/ip")
                         .proxy(ip, p.getHttpHost().getPort())
                         .ignoreContentType(true)
-                        .timeout(4000);
+                        .timeout(3000);
                 Connection.Response proxyRs = null;
                 while (i < 3) {
                     try {
@@ -189,11 +206,11 @@ public class ProxyPool {
                         JSONObject json = new JSONObject(proxyRs.body());
                         if (json.getString("origin").equals(ip)) {
                             success = true;
-                            logger.info(ip + "代理可用!");
+                            System.out.println(ip + "代理可用!");
                         }
                         break;
                     } catch (Exception e) {
-                        logger.info("校验" + ip + "代理第" + i + "次出错");
+                        System.out.println("校验" + ip + "代理第" + i + "次出错");
                     }
                     i++;
                 }
@@ -201,11 +218,10 @@ public class ProxyPool {
                     logger.info(ip + "代理废弃!");
                     proxyQueue.remove(p);
                     allProxy.remove(ip);
-                    logger.info("proxy pool size>>>>" + allProxy.size());
+                    System.out.println("proxy pool size>>>>" + allProxy.size());
                 }
             });
         }
-        threadPool.shutdown();
     }
 
     public static HttpHost getProxy() {
