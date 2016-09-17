@@ -7,9 +7,8 @@ import org.jsoup.Connection.Response;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thread.ThreadPool;
+import thread.CountableThreadPool;
 import thread.WeiboTask;
-import us.codecraft.webmagic.thread.CountableThreadPool;
 import util.*;
 
 import java.io.*;

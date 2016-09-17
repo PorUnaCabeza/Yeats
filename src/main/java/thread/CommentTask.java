@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import proxy.Proxy;
 import proxy.ProxyPool;
 import util.AccountPool;
 import util.Config;
@@ -58,8 +59,8 @@ public class CommentTask implements Runnable {
                 .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36")
                 .header("Upgrade-Insecure-Requests", "1");
         Connection.Response rs = null;
+        HttpHost httpHost = ProxyPool.getProxy();
         try {
-            HttpHost httpHost = ProxyPool.getProxy();
             rs = con
                     .proxy(httpHost.getHostName(), httpHost.getPort())
                     .execute();
@@ -85,6 +86,7 @@ public class CommentTask implements Runnable {
             }
             return true;
         } catch (Exception e) {
+            ProxyPool.returnProxy(httpHost, Proxy.ERROR_403);
             e.printStackTrace();
             return false;
         }
