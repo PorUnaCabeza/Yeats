@@ -222,6 +222,7 @@ public class ProxyPool {
                 }
             });
         }
+        threadPool.shutdown();
     }
 
     public static HttpHost getProxy() {
