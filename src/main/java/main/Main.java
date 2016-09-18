@@ -80,13 +80,17 @@ public class Main {
         new Thread(() -> {
             while (true) {
                 Jedis commentJedis = JedisUtil.getJedis();
+                if (threadPool.getThreadAlive() == 0) {
+                    threadPool.shutdown();
+                    break;
+                }
                 try {
                     Thread.sleep(5000);
                     long size = commentJedis.llen(Config.getValue("jedisWeiboList"));
                     if (size == 0) continue;
                     for (int i = 0; i < size; i++) {
                         String[] commentArr = commentJedis.lpop(Config.getValue("jedisWeiboList")).split(",");
-                        for (int j = 1; j < YeatsUtil.ceil(commentArr[1], Config.getValue("commentPageSize")); j++) {
+                        for (int j = 1; j <= YeatsUtil.ceil(commentArr[1], Config.getValue("commentPageSize")); j++) {
                             threadPool.execute(new CommentTask(commentArr[0], j + "", AccountPool.getAccount().getCookies(), compareId));
                         }
                     }
