@@ -9,6 +9,8 @@ public class Comment {
     private String createTime;
     private String userName;
     private String userId;
+    private String ownerId;
+    private String ownerName;
 
 
     public Comment() {
@@ -54,14 +56,32 @@ public class Comment {
         this.userId = userId;
     }
 
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
     @Override
     public String toString() {
         return "Comment{" +
                 "commentId='" + commentId + '\'' +
                 ", text='" + text + '\'' +
-                ", userName='" + userName + '\'' +
                 ", createTime='" + createTime + '\'' +
+                ", userName='" + userName + '\'' +
                 ", userId='" + userId + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", ownerName='" + ownerName + '\'' +
                 '}';
     }
 }

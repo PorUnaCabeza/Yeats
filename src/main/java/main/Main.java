@@ -91,7 +91,7 @@ public class Main {
                     for (int i = 0; i < size; i++) {
                         String[] commentArr = commentJedis.lpop(Config.getValue("jedisWeiboList")).split(",");
                         for (int j = 1; j <= YeatsUtil.ceil(commentArr[1], Config.getValue("commentPageSize")); j++) {
-                            threadPool.execute(new CommentTask(commentArr[0], j + "", AccountPool.getAccount().getCookies(), compareId));
+                            threadPool.execute(new CommentTask(commentArr[0], j + "", AccountPool.getAccount().getCookies(), compareId, commentArr[1], commentArr[2]));
                         }
                     }
                 } catch (InterruptedException e) {

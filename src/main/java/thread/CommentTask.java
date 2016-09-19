@@ -1,5 +1,6 @@
 package thread;
 
+import com.alibaba.fastjson.JSON;
 import entity.Comment;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -26,13 +27,17 @@ public class CommentTask implements Runnable {
     private String page;
     private String compareUserId;
     private Map cookies;
+    private String ownerId;
+    private String ownerName;
     private boolean success = false;
 
-    public CommentTask(String mid, String page, Map cookies, String compareUserId) {
+    public CommentTask(String mid, String page, Map cookies, String compareUserId, String ownerId, String ownerName) {
         this.mid = mid;
         this.page = page;
         this.cookies = cookies;
         this.compareUserId = compareUserId;
+        this.ownerId = ownerId;
+        this.ownerName = ownerName;
     }
 
     @Override
@@ -79,12 +84,10 @@ public class CommentTask implements Runnable {
                         comment.setCreateTime(commentJson.getString("created_at"));
                         comment.setUserName(commentJson.getJSONObject("user").getString("screen_name"));
                         comment.setUserId(commentJson.getJSONObject("user").get("id").toString());
-                        System.out.println(comment);
-                        YeatsUtil.jedisLog(comment.toString());
-                        if (compareUserId != null && compareUserId.equals(comment.getUserId())) {
-                            log.info(comment.toString());
-                            YeatsUtil.jedisLog("获取！  " + comment.toString());
-                        }
+                        comment.setOwnerId(ownerId);
+                        comment.setOwnerName(ownerName);
+                        System.out.println(JSON.toJSONString(comment));
+                        YeatsUtil.jedisLog(JSON.toJSONString(comment));
                     }
                 }
             }
@@ -118,9 +121,5 @@ public class CommentTask implements Runnable {
 
     public void setCompareUserId(String compareUserId) {
         this.compareUserId = compareUserId;
-    }
-
-    public static void main(String[] args) {
-        new CommentTask("3990971530582668", "32", AccountPool.getAccount().getCookies(), "").run();
     }
 }
