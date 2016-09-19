@@ -34,22 +34,27 @@ public class YeatsResourcesService {
             user = new User(rs.body());
             System.out.println(user);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.info("获得用户信息失败");
             YeatsUtil.jedisLog("获得用户信息失败");
+            Jedis clearJedis = JedisUtil.getJedis();
+            clearJedis.set(Config.getValue("jedisTaskFlag"), "0");
+            JedisUtil.returnResource(clearJedis);
+            System.out.println("Yeats comment shutdown");
             e.printStackTrace();
             return;
         }
+        YeatsUtil.jedisLog("正在获得用户信息...");
         YeatsUtil.jedisLog(user.toString());
-        YeatsUtil.jedisLog("正在初始化代理池,请等待.....");
+        YeatsUtil.jedisLog("正在初始化代理池,请等待...");
         ProxyPool.initAndCheckProxy();
         System.out.println("等待代理初始化");
-        YeatsUtil.jedisLog("等待代理初始化");
         try {
             Thread.sleep(15000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        YeatsUtil.jedisLog("正在爬取微博...");
         Jedis jedis = JedisUtil.getJedis();
         jedis.del(Config.getValue("jedisPeopleList"));
         jedis.del(Config.getValue("jedisWeiboList"));

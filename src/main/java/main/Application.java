@@ -1,6 +1,5 @@
 package main;
 
-import com.github.bingoohuang.springrestclient.spring.SpringRestClientEnabledScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -6,7 +6,7 @@
 
     <groupId>PorUnaCabeza</groupId>
     <artifactId>Yeats</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -16,6 +16,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <start-class>main.Application</start-class>
     </properties>
 
     <dependencies>

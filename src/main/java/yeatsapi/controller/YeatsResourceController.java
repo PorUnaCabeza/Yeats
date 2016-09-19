@@ -33,6 +33,7 @@ public class YeatsResourceController {
             return "full";
         }
         jedis.set(Config.getValue("jedisTaskFlag"), "1");
+        jedis.del(Config.getValue("jedisLogList"));
         JedisUtil.returnResource(jedis);
         yeatsResourcesService.crawlComment(userId, compareId);
         System.out.println("crawl done");

@@ -220,6 +220,9 @@ public class ProxyPool {
                     proxyQueue.remove(p);
                     allProxy.remove(ip);
                     System.out.println("proxy pool size>>>>" + allProxy.size());
+                    if (allProxy.size() % 10 == 0) {
+                        YeatsUtil.jedisLog("proxy pool size>>>>" + allProxy.size());
+                    }
                 }
             });
         }
