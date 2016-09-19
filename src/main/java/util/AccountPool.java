@@ -71,6 +71,7 @@ public class AccountPool {
             Connection.Response rs = con.cookies(account.getCookies()).execute();
             if (rs.body().indexOf("\"isLogin\":true") > 0) {
                 log.info(account.getUserName() + "使用保存的cookie登录成功,状态码" + rs.statusCode());
+                YeatsUtil.jedisLog(account.getUserName() + "使用保存的cookie登录成功,状态码" + rs.statusCode());
                 account.setLogin(true);
             }
         } catch (IOException e) {

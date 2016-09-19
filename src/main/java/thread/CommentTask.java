@@ -12,6 +12,7 @@ import proxy.ProxyPool;
 import util.AccountPool;
 import util.Config;
 import util.JsoupUtil;
+import util.YeatsUtil;
 
 import java.io.IOException;
 import java.util.Map;
@@ -79,8 +80,11 @@ public class CommentTask implements Runnable {
                         comment.setUserName(commentJson.getJSONObject("user").getString("screen_name"));
                         comment.setUserId(commentJson.getJSONObject("user").get("id").toString());
                         System.out.println(comment);
-                        if (compareUserId != null && compareUserId.equals(comment.getUserId()))
+                        YeatsUtil.jedisLog(comment.toString());
+                        if (compareUserId != null && compareUserId.equals(comment.getUserId())) {
                             log.info(comment.toString());
+                            YeatsUtil.jedisLog("获取！  " + comment.toString());
+                        }
                     }
                 }
             }

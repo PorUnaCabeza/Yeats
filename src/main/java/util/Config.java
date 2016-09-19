@@ -10,7 +10,7 @@ import java.util.Properties;
  * Created by Cabeza on 2016-06-03.
  */
 public class Config {
-   /* private static Properties pro = new Properties();
+    private static Properties pro = new Properties();
     static{
         ClassLoader loader = Config.class.getClassLoader();
         InputStream in = loader.getResourceAsStream("Yeats.properties");
@@ -23,10 +23,10 @@ public class Config {
     public static String getValue(String key){
         String value = pro.getProperty(key);
         return value;
-    }*/
-
-    public static String getValue(String key) {
-        return new Miner().getMiner("yeats", "weibo").getString(key);
     }
+
+   /* public static String getValue(String key) {
+        return new Miner().getMiner("yeats", "weibo").getString(key);
+    }*/
 
 }

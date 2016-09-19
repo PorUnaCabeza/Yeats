@@ -7,6 +7,7 @@ import org.jsoup.Connection.Response;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 import thread.CountableThreadPool;
 import thread.WeiboTask;
 import util.*;
@@ -262,6 +263,12 @@ public class YeatsTest {
         for (int i = 0; i <= size; i++) {
             threadPool.execute(new WeiboTask(user, i));
         }
+    }
+
+    @Test
+    public void testRedisCNCode() {
+        Jedis jedis = JedisUtil.getJedis();
+        System.out.println(jedis.lpop(Config.getValue("jedisLogList")));
     }
 
     public static void main(String[] args) {

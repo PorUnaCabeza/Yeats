@@ -1,5 +1,7 @@
 package util;
 
+import redis.clients.jedis.Jedis;
+
 /**
  * Created by Cabeza on 2016-06-03.
  */
@@ -61,5 +63,11 @@ public class YeatsUtil {
             i = i + 6;
         }
         return sb.toString();
+    }
+
+    public static void jedisLog(String log) {
+        Jedis jedis = JedisUtil.getJedis();
+        jedis.rpush(Config.getValue("jedisLogList"), log);
+        JedisUtil.returnResource(jedis);
     }
 }
