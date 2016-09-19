@@ -91,7 +91,7 @@ public class YeatsResourcesService {
 
     public List<String> getLog(long start) {
         Jedis jedis = JedisUtil.getJedis();
-        List list = jedis.lrange(Config.getValue("jedisLogList"), start, Long.parseLong(start + Config.getValue("logPageSize")) - 1);
+        List list = jedis.lrange(Config.getValue("jedisLogList"), start, start + Long.parseLong(Config.getValue("logPageSize")) - 1);
         JedisUtil.returnResource(jedis);
         return list;
     }
