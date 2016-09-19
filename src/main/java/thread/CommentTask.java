@@ -86,6 +86,7 @@ public class CommentTask implements Runnable {
                         comment.setUserId(commentJson.getJSONObject("user").get("id").toString());
                         comment.setOwnerId(ownerId);
                         comment.setOwnerName(ownerName);
+                        comment.setMid(mid);
                         System.out.println(JSON.toJSONString(comment));
                         YeatsUtil.jedisLog(JSON.toJSONString(comment));
                     }

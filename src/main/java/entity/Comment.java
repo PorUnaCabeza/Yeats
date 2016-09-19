@@ -5,6 +5,7 @@ package entity;
  */
 public class Comment {
     private String commentId;
+    private String mid;
     private String text;
     private String createTime;
     private String userName;
@@ -22,6 +23,14 @@ public class Comment {
 
     public void setCommentId(String commentId) {
         this.commentId = commentId;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid;
     }
 
     public String getText() {
@@ -76,6 +85,7 @@ public class Comment {
     public String toString() {
         return "Comment{" +
                 "commentId='" + commentId + '\'' +
+                ", mid='" + mid + '\'' +
                 ", text='" + text + '\'' +
                 ", createTime='" + createTime + '\'' +
                 ", userName='" + userName + '\'' +
