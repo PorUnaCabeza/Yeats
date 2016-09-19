@@ -41,6 +41,7 @@ public class YeatsResourcesService {
             return;
         }
         YeatsUtil.jedisLog(user.toString());
+        YeatsUtil.jedisLog("正在初始化代理池,请等待.....");
         ProxyPool.initAndCheckProxy();
         System.out.println("等待代理初始化");
         YeatsUtil.jedisLog("等待代理初始化");
@@ -90,7 +91,7 @@ public class YeatsResourcesService {
 
     public List<String> getLog(long start) {
         Jedis jedis = JedisUtil.getJedis();
-        List list = jedis.lrange(Config.getValue("jedisLogList"), start, start + 10);
+        List list = jedis.lrange(Config.getValue("jedisLogList"), start, Long.parseLong(start + Config.getValue("logPageSize")) - 1);
         JedisUtil.returnResource(jedis);
         return list;
     }

@@ -189,7 +189,6 @@ public class ProxyPool {
                     .forEach(e -> addProxy(new String[]{e.select("td").eq(1).text(), e.select("td").eq(2).text()}));
         }
         System.out.println("proxy pool size>>>>" + allProxy.size());
-        YeatsUtil.jedisLog("proxy pool size>>>>" + allProxy.size());
         CountableThreadPool threadPool = new CountableThreadPool(5);
         for (Proxy p : proxyQueue) {
             threadPool.execute(() -> {
@@ -209,7 +208,6 @@ public class ProxyPool {
                         if (json.getString("origin").equals(ip)) {
                             success = true;
                             System.out.println(ip + "代理可用!");
-                            YeatsUtil.jedisLog(ip + "代理可用!");
                         }
                         break;
                     } catch (Exception e) {
@@ -219,15 +217,14 @@ public class ProxyPool {
                 }
                 if (!success) {
                     logger.info(ip + "代理废弃!");
-                    YeatsUtil.jedisLog(ip + "代理废弃!");
                     proxyQueue.remove(p);
                     allProxy.remove(ip);
                     System.out.println("proxy pool size>>>>" + allProxy.size());
-                    YeatsUtil.jedisLog("proxy pool size>>>>" + allProxy.size());
                 }
             });
         }
         threadPool.shutdown();
+        YeatsUtil.jedisLog("proxy pool size>>>>" + allProxy.size());
     }
 
     public static HttpHost getProxy() {

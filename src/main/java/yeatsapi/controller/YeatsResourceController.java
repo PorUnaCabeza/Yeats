@@ -47,9 +47,14 @@ public class YeatsResourceController {
 
     @RequestMapping("log/{start}")
     public Map getLog(@PathVariable long start) {
+        Jedis jedis = JedisUtil.getJedis();
+        String status = jedis.get(Config.getValue("jedisTaskFlag"));
+        JedisUtil.returnResource(jedis);
         return Collections.asMap(
-                "start", start + 11
+                "start", start
+                , "nextStart", start + Long.parseLong(Config.getValue("logPageSize"))
                 , "list", yeatsResourcesService.getLog(start)
+                , "status", status
         );
     }
 }
